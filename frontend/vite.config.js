@@ -7,5 +7,8 @@ export default defineConfig({
   server: {
     host: true, // Libera o acesso para o Docker expor a porta
     port: 5173, 
+    watch: {
+      usePolling: true,
+    }
   }
 })
