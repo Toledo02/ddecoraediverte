@@ -16,11 +16,12 @@ model Produto {
   descricao String?  // O '?' significa que é opcional
   categoria String
   imagemUrl String   // Vamos salvar a URL do Cloudinary aqui
+  preco     Float
   ativo     Boolean  @default(true)
   createdAt DateTime @default(now())
 }
 
-// Modelo do Usuário (Para sua mãe logar)
+// Modelo do Usuário
 model Usuario {
   id    Int    @id @default(autoincrement())
   email String @unique

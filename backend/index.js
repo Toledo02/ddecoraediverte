@@ -2,49 +2,48 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 
+const prisma = new PrismaClient();
 const app = express();
-const prisma = new PrismaClient(); // Instância que conecta no banco
 
-app.use(express.json()); // Permite ler JSON enviado no corpo da requisição
+app.use(express.json());
 app.use(cors());
 
-// Rota 1: Listar Produtos (Para a Vitrine)
+// Rota para listar produtos
 app.get('/produtos', async (req, res) => {
-    try {
-        const produtos = await prisma.produto.findMany({
-            where: { ativo: true }, // Só traz produtos ativos
-            orderBy: { id: 'desc' } // Os mais novos primeiro
-        });
-        res.json(produtos);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Erro ao buscar produtos' });
-    }
+  try {
+    const produtos = await prisma.produto.findMany({
+      orderBy: { id: 'desc' }
+    });
+    res.json(produtos);
+  } catch (error) {
+    console.error(error); // Isso mostra o erro real no terminal
+    res.status(500).json({ error: 'Erro ao buscar produtos' });
+  }
 });
 
-// Rota 2: Criar Produto (Para o Admin)
+// Rota para criar produto
 app.post('/produtos', async (req, res) => {
-    // Pegamos os dados que o front enviou
-    const { nome, descricao, categoria, imagemUrl } = req.body;
+  try {
+    const { nome, descricao, categoria, imagemUrl, preco } = req.body;
 
-    try {
-        const novoProduto = await prisma.produto.create({
-            data: {
-                nome,
-                descricao,
-                categoria,
-                imagemUrl,
-                ativo: true
-            }
-        });
-        res.status(201).json(novoProduto);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Erro ao criar produto' });
-    }
+    const produto = await prisma.produto.create({
+      data: {
+        nome,
+        descricao,
+        categoria,
+        imagemUrl,
+        preco: parseFloat(preco) 
+      },
+    });
+
+    res.json(produto);
+  } catch (error) {
+    console.error(error); // Importante: Mostra o erro detalhado no terminal do Docker
+    res.status(500).json({ error: 'Erro ao criar produto' });
+  }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 API rodando na porta ${PORT}`);
+  console.log(`🚀 API rodando na porta ${PORT}`);
 });
