@@ -8,6 +8,21 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Rota de Login Simples
+app.post('/login', (req, res) => {
+  const { login, password } = req.body; // Recebe os dois
+  
+  const validLogin = process.env.ADMIN_LOGIN;
+  const validPassword = process.env.ADMIN_PASSWORD;
+
+  // Verifica se OS DOIS batem
+  if (login === validLogin && password === validPassword) {
+    res.json({ success: true, message: 'Acesso liberado' });
+  } else {
+    res.status(401).json({ error: 'Usuário ou senha incorretos' });
+  }
+});
+
 // Rota para listar produtos
 app.get('/produtos', async (req, res) => {
   try {
