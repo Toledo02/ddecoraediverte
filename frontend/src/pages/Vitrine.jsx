@@ -32,7 +32,7 @@ function Vitrine() {
   useEffect(() => {
     async function fetchProdutos() {
       try {
-        const response = await axios.get('http://localhost:3000/produtos');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/produtos`);
         setProdutos(response.data);
       } catch (error) {
         toast({

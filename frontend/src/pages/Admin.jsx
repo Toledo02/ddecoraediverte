@@ -32,7 +32,7 @@ export default function Admin() {
 
   async function carregarProdutos() {
     try {
-      const response = await axios.get('http://localhost:3000/produtos');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/produtos`);
       setProdutos(response.data);
     } catch (error) {
       console.error(error);
@@ -70,11 +70,11 @@ export default function Admin() {
 
       if (produtoEditando) {
         // ATUALIZAR (PUT)
-        await axios.put(`http://localhost:3000/produtos/${produtoEditando.id}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/produtos/${produtoEditando.id}`, formData);
         toast({ title: 'Produto atualizado!', status: 'success' });
       } else {
         // CRIAR (POST)
-        await axios.post('http://localhost:3000/produtos', formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/produtos`, formData);
         toast({ title: 'Produto criado!', status: 'success' });
       }
 
@@ -89,7 +89,7 @@ export default function Admin() {
   async function handleExcluir(id) {
     if (confirm('Tem certeza que deseja excluir este item?')) {
       try {
-        await axios.delete(`http://localhost:3000/produtos/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/produtos/${id}`);
         toast({ title: 'Produto excluído.', status: 'info' });
         carregarProdutos();
       } catch (error) {
