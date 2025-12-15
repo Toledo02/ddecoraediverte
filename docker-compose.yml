@@ -31,8 +31,17 @@ services:
       - /usr/src/app/node_modules
     command: sh -c "npx prisma generate && npm run dev"
 
-  # Se você já criou o frontend, mantenha o serviço web aqui embaixo
-  # ...
+  web:
+    image: node:22-slim
+    container_name: decoracao_web
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    # Instala as dependências e roda o servidor (host liberado)
+    command: sh -c "npm install && npm run dev"
 
 volumes:
   pgdata:
