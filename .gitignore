@@ -1,0 +1,32 @@
+# Dependências do Node (para todas as pastas)
+node_modules/
+npm-debug.log
+
+# Arquivos de Ambiente (MUITO IMPORTANTE: Nunca suba senhas)
+.env
+.env.local
+.env.*.local
+
+# Build do Frontend (será gerado depois)
+dist/
+build/
+
+# Banco de Dados e Docker
+postgres-data/
+.docker/
+
+# Arquivos de Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Configurações de Editor (Opcional, se quiser ignorar configs locais do VSCode)
+.vscode/
+.idea/

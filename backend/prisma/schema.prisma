@@ -1,0 +1,28 @@
+// Isso diz pro Prisma que vamos usar JS e Postgres
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo do Produto
+model Produto {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  descricao String?  // O '?' significa que é opcional
+  categoria String
+  imagemUrl String   // Vamos salvar a URL do Cloudinary aqui
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// Modelo do Usuário (Para sua mãe logar)
+model Usuario {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+  senha String // Aqui vamos salvar a senha criptografada (hash)
+}
