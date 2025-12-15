@@ -3,12 +3,14 @@ import ReactDOM from 'react-dom/client'
 import { ChakraProvider } from '@chakra-ui/react'
 import App from './App.jsx'
 import theme from './theme'
+import { CartProvider } from './context/CartContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {/* Passe o theme para o Provider */}
     <ChakraProvider theme={theme}>
-      <App />
+      <CartProvider> {/* <--- O CartProvider deve ficar AQUI dentro */}
+        <App />
+      </CartProvider>
     </ChakraProvider>
   </React.StrictMode>,
 )
