@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Box, Flex, Button, Container, Link, Image, Badge, Icon } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
-import { CartContext } from '../context/CartContext'; // <--- Importando o Contexto
+import { CartContext } from '../contexts/CartContext'; // <--- Importando o Contexto
 
 // Se você não tiver um ícone de carrinho instalado, usaremos texto.
 // Se tiver react-icons, pode importar aqui. Vou usar um caractere simples ou SVG inline por segurança.
