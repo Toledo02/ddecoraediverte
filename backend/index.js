@@ -43,6 +43,46 @@ app.post('/produtos', async (req, res) => {
   }
 });
 
+// Rota para ATUALIZAR um produto (PUT)
+app.put('/produtos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nome, descricao, categoria, imagemUrl, preco } = req.body;
+
+    const produto = await prisma.produto.update({
+      where: { id: Number(id) }, // Converte string "1" para numero 1
+      data: {
+        nome,
+        descricao,
+        categoria,
+        imagemUrl,
+        preco: parseFloat(preco) // Garante que seja número
+      },
+    });
+
+    res.json(produto);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao atualizar produto' });
+  }
+});
+
+// Rota para EXCLUIR um produto (DELETE)
+app.delete('/produtos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.produto.delete({
+      where: { id: Number(id) },
+    });
+
+    res.json({ message: 'Produto deletado com sucesso' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao deletar produto' });
+  }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 API rodando na porta ${PORT}`);
