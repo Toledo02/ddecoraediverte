@@ -1,43 +1,27 @@
 import { useEffect, useState } from 'react';
 import { 
-  Box, Container, Grid, Heading, Text, Image, Button, Badge, 
-  Flex, Spinner, Center, useToast, IconButton, HStack,
-  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, 
-  ModalCloseButton, ModalFooter, Input, FormControl, FormLabel,
-  useDisclosure
+  Box, Container, SimpleGrid, Image, Heading, Text, Badge, 
+  Button, Stack, Flex, Spinner, Center, useToast 
 } from '@chakra-ui/react';
-import { AddIcon, MinusIcon } from '@chakra-ui/icons';
-import { FaWhatsapp } from 'react-icons/fa';
 import axios from 'axios';
 
-// Importamos nosso contexto do carrinho
-import { useCart } from '../contexts/CartContext';
-
-function Vitrine() {
-  const [produtos, setProdutos] = useState([]);
+export default function Vitrine() {
+  // 1. Inicializa como array vazio [] para não dar erro de undefined
+  const [produtos, setProdutos] = useState([]); 
   const [loading, setLoading] = useState(true);
-  
-  // Estados para o formulário de checkout
-  const [nomeCliente, setNomeCliente] = useState('');
-  const [dataFesta, setDataFesta] = useState('');
-
   const toast = useToast();
-  
-  // Controle do Modal de Checkout
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // Pegamos as funções do carrinho
-  const { cart, addToCart, removeFromCart, totalValue, generateWhatsAppMessage } = useCart();
 
   useEffect(() => {
-    async function fetchProdutos() {
+    async function buscarProdutos() {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/produtos`);
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        const response = await axios.get(`${apiUrl}/produtos`);
         setProdutos(response.data);
       } catch (error) {
+        console.error("Erro ao buscar:", error);
         toast({
-          title: 'Erro de conexão',
-          description: "Verifique se o backend está rodando.",
+          title: 'Erro ao carregar produtos.',
+          description: "Tente recarregar a página.",
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -46,211 +30,92 @@ function Vitrine() {
         setLoading(false);
       }
     }
-    fetchProdutos();
+
+    buscarProdutos();
   }, []);
 
-  // Função auxiliar para saber a quantidade de um item específico no carrinho
-  function getQuantity(produtoId) {
-    const item = cart.find(i => i.id === produtoId);
-    return item ? item.quantity : 0;
-  }
-
-  // Função que envia o Zap
-  function handleSendWhatsapp() {
-    if (!nomeCliente || !dataFesta) {
-      toast({
-        title: 'Campos obrigatórios',
-        description: "Por favor, preencha seu nome e a data da festa.",
-        status: 'warning',
-      });
-      return;
-    }
-
-    const link = `https://wa.me/5541999999999?text=${generateWhatsAppMessage(nomeCliente, dataFesta)}`;
-    window.open(link, '_blank');
-    onClose(); // Fecha o modal após enviar
+  // 2. Se estiver carregando, mostra um spinner girando
+  if (loading) {
+    return (
+      <Center h="50vh">
+        <Spinner size="xl" color="brand.500" thickness="4px" />
+      </Center>
+    );
   }
 
   return (
-    <Box bg="gray.50" minH="100vh" pb="120px"> {/* Padding bottom grande para não esconder cards atrás da barra fixa */}
-      
-      {/* Cabeçalho */}
-      <Box bg="purple.600" p={4} color="white" shadow="md" position="sticky" top={0} zIndex={10}>
-        <Container maxW="container.md">
-          <Flex justify="space-between" align="center">
-            <Heading size="md">D' Decora e Diverte</Heading>
-            {/* Opcional: Mostrar contador total de itens aqui */}
-          </Flex>
-        </Container>
-      </Box>
+    <Container maxW="container.xl" py={10}>
+      <Heading mb={2} color="brand.700" textAlign="center" fontFamily="heading">
+        Nossos Temas
+      </Heading>
+      <Text mb={10} color="gray.500" textAlign="center">
+        Escolha o tema perfeito para a sua próxima festa
+      </Text>
 
-      <Container maxW="container.md" mt={6}>
-        {loading ? (
-          <Center h="50vh">
-            <Spinner size="xl" color="purple.500" />
-          </Center>
-        ) : (
-          <Grid templateColumns={["1fr", "1fr 1fr"]} gap={6}>
-            {produtos.map((produto) => {
-              const qty = getQuantity(produto.id);
-              
-              return (
-                <Box 
-                  key={produto.id} 
-                  bg="white" 
-                  borderRadius="lg" 
-                  overflow="hidden" 
-                  shadow="sm"
-                  border="1px"
-                  borderColor={qty > 0 ? "purple.300" : "gray.200"} // Destaca se estiver no carrinho
-                  transition="all 0.2s"
-                >
-                  <Box position="relative">
-                    <Image 
-                      src={produto.imagemUrl} 
-                      alt={produto.nome}
-                      h="200px" 
-                      w="100%" 
-                      objectFit="cover"
-                    />
-                    {/* Preço sobre a imagem (opcional) ou no corpo */}
-                  </Box>
+      {/* 3. Verificação de segurança: Se a lista estiver vazia */}
+      {produtos.length === 0 ? (
+        <Center flexDir="column" py={10}>
+          <Text fontSize="xl" color="gray.400">Nenhum produto cadastrado ainda.</Text>
+          <Text fontSize="sm" color="gray.400">Acesse o painel Admin para adicionar.</Text>
+        </Center>
+      ) : (
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8}>
+          {produtos.map((produto) => (
+            <Box 
+              key={produto.id} 
+              borderWidth="1px" 
+              borderRadius="2xl" 
+              overflow="hidden" 
+              bg="white" 
+              shadow="lg"
+              _hover={{ transform: 'translateY(-5px)', shadow: 'xl' }}
+              transition="all 0.2s"
+            >
+              <Image 
+                src={produto.imagemUrl} 
+                alt={produto.nome} 
+                h="250px" 
+                w="100%" 
+                objectFit="cover"
+                fallbackSrc="https://via.placeholder.com/300?text=Sem+Foto"
+              />
 
-                  <Box p={4}>
-                    <Flex justify="space-between" align="center" mb={2}>
-                      <Badge borderRadius="full" px="2" colorScheme="purple">
-                        {produto.categoria}
-                      </Badge>
-                      <Text fontWeight="bold" color="green.600">
-                        R$ {produto.preco.toFixed(2)}
-                      </Text>
-                    </Flex>
-                    
-                    <Heading size="md" mb={2}>
-                      {produto.nome}
-                    </Heading>
-                    
-                    <Text fontSize="sm" color="gray.600" noOfLines={2} mb={4}>
-                      {produto.descricao}
-                    </Text>
+              <Box p={6}>
+                <Flex align="baseline" mt={2}>
+                  <Badge px={2} py={1} bg="brand.100" color="brand.800" borderRadius="md" fontSize="0.8em">
+                    {produto.categoria}
+                  </Badge>
+                </Flex>
 
-                    {/* Lógica dos Botões de Quantidade */}
-                    {qty === 0 ? (
-                      <Button 
-                        w="full" 
-                        colorScheme="purple" 
-                        variant="outline"
-                        onClick={() => addToCart(produto)}
-                      >
-                        Adicionar
-                      </Button>
-                    ) : (
-                      <Flex align="center" justify="space-between" bg="purple.50" p={1} borderRadius="md">
-                        <IconButton 
-                          icon={<MinusIcon />} 
-                          size="sm" 
-                          colorScheme="purple" 
-                          variant="ghost"
-                          onClick={() => removeFromCart(produto.id)}
-                          aria-label="Remover"
-                        />
-                        <Text fontWeight="bold" fontSize="lg">{qty}</Text>
-                        <IconButton 
-                          icon={<AddIcon />} 
-                          size="sm" 
-                          colorScheme="purple" 
-                          variant="solid"
-                          onClick={() => addToCart(produto)}
-                          aria-label="Adicionar"
-                        />
-                      </Flex>
-                    )}
-                  </Box>
-                </Box>
-              );
-            })}
-          </Grid>
-        )}
-      </Container>
+                <Heading mt={2} size="md" fontWeight="bold" lineHeight="short" fontFamily="heading" color="gray.700">
+                  {produto.nome}
+                </Heading>
 
-      {/* BARRA INFERIOR FLUTUANTE (Checkout) */}
-      {cart.length > 0 && (
-        <Box 
-          position="fixed" 
-          bottom={0} 
-          left={0} 
-          right={0} 
-          bg="white" 
-          p={4} 
-          shadow="lg" 
-          borderTop="1px" 
-          borderColor="gray.200"
-          zIndex={20}
-        >
-          <Container maxW="container.md">
-            <Flex justify="space-between" align="center">
-              <Box>
-                <Text fontSize="sm" color="gray.500">Total Estimado</Text>
-                <Text fontSize="xl" fontWeight="bold" color="purple.600">
-                  R$ {totalValue.toFixed(2)}
+                <Text mt={2} color="gray.500" noOfLines={2}>
+                  {produto.descricao}
                 </Text>
+
+                <Flex mt={4} justify="space-between" align="center">
+                  <Text fontSize="2xl" fontWeight="bold" color="brand.600">
+                    R$ {Number(produto.preco).toFixed(2)}
+                  </Text>
+                  
+                  <Button 
+                    as="a" 
+                    href={`https://wa.me/5541999999999?text=Olá! Gostaria de saber mais sobre o tema ${produto.nome}`}
+                    target="_blank"
+                    colorScheme="brand" 
+                    size="sm"
+                    rounded="full"
+                  >
+                    Reservar
+                  </Button>
+                </Flex>
               </Box>
-              <Button 
-                rightIcon={<FaWhatsapp />} 
-                colorScheme="green" 
-                size="lg"
-                onClick={onOpen} // Abre o modal
-              >
-                Finalizar
-              </Button>
-            </Flex>
-          </Container>
-        </Box>
+            </Box>
+          ))}
+        </SimpleGrid>
       )}
-
-      {/* MODAL DE DADOS DO CLIENTE */}
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent mx={4}>
-          <ModalHeader>Quase lá!</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text mb={4} color="gray.600">
-              Informe seus dados para montarmos o orçamento no WhatsApp.
-            </Text>
-            
-            <FormControl isRequired mb={4}>
-              <FormLabel>Seu Nome</FormLabel>
-              <Input 
-                placeholder="Ex: Maria Silva" 
-                value={nomeCliente}
-                onChange={(e) => setNomeCliente(e.target.value)}
-              />
-            </FormControl>
-
-            <FormControl isRequired>
-              <FormLabel>Data da Festa</FormLabel>
-              <Input 
-                type="date" 
-                value={dataFesta}
-                onChange={(e) => setDataFesta(e.target.value)}
-              />
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button colorScheme="green" onClick={handleSendWhatsapp}>
-              Enviar Orçamento
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-    </Box>
+    </Container>
   );
 }
-
-export default Vitrine;
