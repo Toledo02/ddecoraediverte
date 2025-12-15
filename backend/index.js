@@ -98,6 +98,23 @@ app.delete('/produtos/:id', async (req, res) => {
   }
 });
 
+// --- ROTAS DE SERVIÇOS ---
+
+// Listar Serviços
+app.get('/servicos', async (req, res) => {
+  const servicos = await prisma.servico.findMany({ where: { ativo: true } });
+  res.json(servicos);
+});
+
+// Criar Serviço (Para o Admin)
+app.post('/servicos', async (req, res) => {
+  const { nome, preco } = req.body;
+  const servico = await prisma.servico.create({
+    data: { nome, preco: parseFloat(preco), ativo: true }
+  });
+  res.json(servico);
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 API rodando na porta ${PORT}`);

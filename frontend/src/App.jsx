@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import Vitrine from './pages/Vitrine';
 import Sobre from './pages/Sobre';
 import Admin from './pages/Admin';
+import CarrinhoPage from './pages/CarrinhoPage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/decoracoes" element={<Vitrine />} />
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/carrinho" element={<CarrinhoPage />} />
         </Routes>
       </Box>
     </BrowserRouter>
