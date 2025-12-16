@@ -69,7 +69,7 @@ export default function CarrinhoPage() {
 
     msg += `\n*💰 TOTAL ESTIMADO: R$ ${valorFinal.toFixed(2)}*`;
     
-    const link = `https://wa.me/5541999999999?text=${encodeURIComponent(msg)}`;
+    const link = `https://wa.me/554196812677?text=${encodeURIComponent(msg)}`;
     window.open(link, '_blank');
     clearCart();
   }
