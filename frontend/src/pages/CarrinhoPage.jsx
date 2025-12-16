@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { 
   Container, Heading, VStack, HStack, Text, Button, Box, Divider, 
   Checkbox, CheckboxGroup, Stack, useToast, FormControl, FormLabel, Input,
-  IconButton, Flex
+  IconButton, Flex, SimpleGrid
 } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -14,8 +14,12 @@ export default function CarrinhoPage() {
   
   const [servicosDisponiveis, setServicosDisponiveis] = useState([]);
   const [servicosSelecionados, setServicosSelecionados] = useState([]);
+  
+  // NOVOS CAMPOS
   const [nomeCliente, setNomeCliente] = useState('');
   const [dataFesta, setDataFesta] = useState('');
+  const [localFesta, setLocalFesta] = useState('');
+  const [horarioFesta, setHorarioFesta] = useState('');
   
   const toast = useToast();
 
@@ -25,9 +29,7 @@ export default function CarrinhoPage() {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
         const response = await axios.get(`${apiUrl}/servicos`);
         setServicosDisponiveis(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar serviços");
-      }
+      } catch (error) { console.error("Erro ao buscar serviços"); }
     }
     loadServicos();
   }, []);
@@ -40,15 +42,16 @@ export default function CarrinhoPage() {
   const valorFinal = totalValue + totalServicos;
 
   function handleFinalizar() {
-    if (!nomeCliente || !dataFesta) {
-      toast({ title: 'Preencha nome e data!', status: 'warning' });
+    if (!nomeCliente || !dataFesta || !localFesta) {
+      toast({ title: 'Preencha os dados obrigatórios!', status: 'warning' });
       return;
     }
 
     let msg = `Olá! Me chamo *${nomeCliente}*.\n`;
-    msg += `Data da Festa: *${dataFesta}*.\n\n`;
+    msg += `📅 Data: *${dataFesta}* - ⏰ Horário: *${horarioFesta}*\n`;
+    msg += `📍 Local: *${localFesta}*\n\n`;
     
-    msg += `*🛒 Itens:* \n`;
+    msg += `*🛒 Itens Selecionados:* \n`;
     cart.forEach(item => {
       msg += `- ${item.quantity}x ${item.nome} (R$ ${item.preco * item.quantity})\n`;
     });
@@ -81,6 +84,7 @@ export default function CarrinhoPage() {
     <Container maxW="container.md" py={10}>
       <Heading mb={6} color="brand.700" fontFamily="heading">Finalizar Orçamento</Heading>
 
+      {/* 1. ITENS */}
       <Box bg="white" p={6} borderRadius="xl" shadow="sm" mb={6}>
         <Heading size="sm" mb={4}>1. Itens Selecionados</Heading>
         <VStack align="stretch" spacing={4}>
@@ -92,13 +96,7 @@ export default function CarrinhoPage() {
               </VStack>
               <HStack>
                 <Text fontWeight="bold">R$ {item.preco * item.quantity}</Text>
-                <IconButton 
-                  icon={<DeleteIcon />} 
-                  size="sm" 
-                  colorScheme="red" 
-                  variant="ghost" 
-                  onClick={() => removeFromCart(item.id)}
-                />
+                <IconButton icon={<DeleteIcon />} size="sm" colorScheme="red" variant="ghost" onClick={() => removeFromCart(item.id)} />
               </HStack>
             </HStack>
           ))}
@@ -110,10 +108,11 @@ export default function CarrinhoPage() {
         </Flex>
       </Box>
 
+      {/* 2. SERVIÇOS */}
       <Box bg="white" p={6} borderRadius="xl" shadow="sm" mb={6}>
         <Heading size="sm" mb={4}>2. Serviços Adicionais</Heading>
         {servicosDisponiveis.length === 0 ? (
-          <Text fontSize="sm" color="gray.500">Nenhum serviço extra cadastrado.</Text>
+          <Text fontSize="sm" color="gray.500">Nenhum serviço extra cadastrado. (Adicione no Admin)</Text>
         ) : (
           <CheckboxGroup colorScheme="brand" onChange={setServicosSelecionados}>
             <Stack spacing={3}>
@@ -130,16 +129,29 @@ export default function CarrinhoPage() {
         )}
       </Box>
 
+      {/* 3. DADOS */}
       <Box bg="white" p={6} borderRadius="xl" shadow="lg" border="1px solid" borderColor="brand.200">
-        <Heading size="sm" mb={4}>3. Seus Dados</Heading>
+        <Heading size="sm" mb={4}>3. Dados da Festa</Heading>
         <VStack spacing={4}>
           <FormControl isRequired>
             <FormLabel>Seu Nome</FormLabel>
             <Input value={nomeCliente} onChange={(e) => setNomeCliente(e.target.value)} placeholder="Ex: Ana Maria" />
           </FormControl>
+          
+          <SimpleGrid columns={2} spacing={4} w="full">
+            <FormControl isRequired>
+              <FormLabel>Data da Festa</FormLabel>
+              <Input type="date" value={dataFesta} onChange={(e) => setDataFesta(e.target.value)} />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Horário</FormLabel>
+              <Input type="time" value={horarioFesta} onChange={(e) => setHorarioFesta(e.target.value)} />
+            </FormControl>
+          </SimpleGrid>
+
           <FormControl isRequired>
-            <FormLabel>Data da Festa</FormLabel>
-            <Input type="date" value={dataFesta} onChange={(e) => setDataFesta(e.target.value)} />
+            <FormLabel>Local / Endereço</FormLabel>
+            <Input value={localFesta} onChange={(e) => setLocalFesta(e.target.value)} placeholder="Rua das Flores, 123 - Salão X" />
           </FormControl>
           
           <Divider my={2} />
@@ -149,13 +161,7 @@ export default function CarrinhoPage() {
             <Text fontWeight="bold" color="brand.600" fontSize="2xl">R$ {valorFinal.toFixed(2)}</Text>
           </Flex>
 
-          <Button 
-            w="full" 
-            size="lg" 
-            colorScheme="green" 
-            leftIcon={<FaWhatsapp />}
-            onClick={handleFinalizar}
-          >
+          <Button w="full" size="lg" colorScheme="green" leftIcon={<FaWhatsapp />} onClick={handleFinalizar}>
             Enviar Orçamento no WhatsApp
           </Button>
         </VStack>

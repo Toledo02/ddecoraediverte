@@ -115,6 +115,32 @@ app.post('/servicos', async (req, res) => {
   res.json(servico);
 });
 
+// Atualizar Serviço
+app.put('/servicos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, preco } = req.body;
+  try {
+    const servico = await prisma.servico.update({
+      where: { id: parseInt(id) },
+      data: { nome, preco: parseFloat(preco) }
+    });
+    res.json(servico);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao atualizar serviço" });
+  }
+});
+
+// Deletar Serviço
+app.delete('/servicos/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.servico.delete({ where: { id: parseInt(id) } });
+    res.json({ message: "Serviço deletado" });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao deletar serviço" });
+  }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 API rodando na porta ${PORT}`);
