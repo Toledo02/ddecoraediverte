@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { 
   Container, Heading, VStack, HStack, Text, Button, Box, Divider, 
-  Checkbox, CheckboxGroup, Stack, useToast, FormControl, FormLabel, Input
+  Checkbox, CheckboxGroup, Stack, useToast, FormControl, FormLabel, Input,
+  IconButton, Flex
 } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -13,13 +14,11 @@ export default function CarrinhoPage() {
   
   const [servicosDisponiveis, setServicosDisponiveis] = useState([]);
   const [servicosSelecionados, setServicosSelecionados] = useState([]);
-  
   const [nomeCliente, setNomeCliente] = useState('');
   const [dataFesta, setDataFesta] = useState('');
   
   const toast = useToast();
 
-  // Carregar serviços do backend
   useEffect(() => {
     async function loadServicos() {
       try {
@@ -33,7 +32,6 @@ export default function CarrinhoPage() {
     loadServicos();
   }, []);
 
-  // Calcular total dos serviços
   const totalServicos = servicosSelecionados.reduce((acc, id) => {
     const servico = servicosDisponiveis.find(s => s.id === parseInt(id));
     return acc + (servico ? servico.preco : 0);
@@ -47,7 +45,6 @@ export default function CarrinhoPage() {
       return;
     }
 
-    // Montar mensagem detalhada
     let msg = `Olá! Me chamo *${nomeCliente}*.\n`;
     msg += `Data da Festa: *${dataFesta}*.\n\n`;
     
@@ -84,7 +81,6 @@ export default function CarrinhoPage() {
     <Container maxW="container.md" py={10}>
       <Heading mb={6} color="brand.700" fontFamily="heading">Finalizar Orçamento</Heading>
 
-      {/* LISTA DE PRODUTOS */}
       <Box bg="white" p={6} borderRadius="xl" shadow="sm" mb={6}>
         <Heading size="sm" mb={4}>1. Itens Selecionados</Heading>
         <VStack align="stretch" spacing={4}>
@@ -114,7 +110,6 @@ export default function CarrinhoPage() {
         </Flex>
       </Box>
 
-      {/* SELEÇÃO DE SERVIÇOS */}
       <Box bg="white" p={6} borderRadius="xl" shadow="sm" mb={6}>
         <Heading size="sm" mb={4}>2. Serviços Adicionais</Heading>
         {servicosDisponiveis.length === 0 ? (
@@ -135,7 +130,6 @@ export default function CarrinhoPage() {
         )}
       </Box>
 
-      {/* DADOS FINAIS */}
       <Box bg="white" p={6} borderRadius="xl" shadow="lg" border="1px solid" borderColor="brand.200">
         <Heading size="sm" mb={4}>3. Seus Dados</Heading>
         <VStack spacing={4}>
