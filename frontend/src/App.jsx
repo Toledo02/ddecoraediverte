@@ -1,10 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Box } from '@chakra-ui/react';
-
-// Importando componentes
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import FloatingBar from './components/FloatingBar';
 
-// Importando páginas
 import Home from './pages/Home';
 import Vitrine from './pages/Vitrine';
 import Sobre from './pages/Sobre';
@@ -13,11 +11,11 @@ import CarrinhoPage from './pages/CarrinhoPage';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Box minH="100vh" bg="gray.50">
-        {/* A Navbar fica fora das Routes para aparecer em todas as telas */}
-        <Navbar />
-        
+    <Router>
+      <Navbar />
+      
+      {/* O pb={24} garante espaço para a barra flutuante não tapar o conteúdo */}
+      <Box pb={24} minH="calc(100vh - 200px)"> 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/decoracoes" element={<Vitrine />} />
@@ -26,8 +24,13 @@ function App() {
           <Route path="/carrinho" element={<CarrinhoPage />} />
         </Routes>
       </Box>
-    </BrowserRouter>
+
+      <FloatingBar /> {/* Barra fixa sempre visível se tiver itens */}
+      <Footer />      {/* Rodapé sempre visível */}
+    </Router>
   );
 }
+
+import { Box } from '@chakra-ui/react';
 
 export default App;

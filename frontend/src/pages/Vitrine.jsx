@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { 
   Box, Container, SimpleGrid, Image, Heading, Text, Badge, 
   Button, Flex, Spinner, Center, useToast, IconButton,
-  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, Divider
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, Divider, ModalFooter
 } from '@chakra-ui/react';
 import { AddIcon, MinusIcon, InfoIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
@@ -151,23 +151,6 @@ export default function Vitrine() {
           )}
         </ModalContent>
       </Modal>
-
-      {/* BARRA FLUTUANTE (MANTIDA) */}
-      {totalItems > 0 && (
-        <Box position="fixed" bottom="0" left="0" w="100%" bg="white" p={4} shadow="0px -4px 10px rgba(0,0,0,0.1)" zIndex={999} borderTopRadius="xl">
-          <Container maxW="container.lg">
-            <Flex justify="space-between" align="center">
-              <Box>
-                <Text fontSize="sm" color="gray.500">Total estimado</Text>
-                <Text fontSize="xl" fontWeight="bold" color="brand.600">R$ {totalValue.toFixed(2)}</Text>
-              </Box>
-              <Button as={Link} to="/carrinho" colorScheme="brand" size="lg" px={8} rounded="full" shadow="lg">
-                Ver Carrinho ({totalItems})
-              </Button>
-            </Flex>
-          </Container>
-        </Box>
-      )}
     </Box>
   );
 }

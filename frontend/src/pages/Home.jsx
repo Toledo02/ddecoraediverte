@@ -65,13 +65,6 @@ export default function Home() {
           />
         </SimpleGrid>
       </Container>
-
-      {/* --- RODAPÉ --- */}
-      <Box bg="brand.800" color="white" py={10} mt={10}>
-        <Container maxW="container.lg" textAlign="center">
-          <Text>&copy; {new Date().getFullYear()} D' Decora e Diverte. Feito com carinho.</Text>
-        </Container>
-      </Box>
     </Box>
   );
 }
